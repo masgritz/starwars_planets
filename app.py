@@ -124,10 +124,13 @@ def delete_planet_by_name(name):
     """deletes a planet from the database that matches the name"""
     planets_db = mongo.db.starwars_planets
 
-    if planet:
-        planets.delete_one({'nome': name.capitalize()})
+    try:
+        planet = planets_db.find_one_and_delete({'name': name.capitalize()})
+        name = planet['name']
         output = name.capitalize() + ' has been deleted.'
-    else:
+
+    except TypeError as te:
+        print(te)
         output = 'Name not found! If an item does not appear in our records, it does not exist.'
 
     return jsonify({'result': output})
@@ -139,10 +142,8 @@ def delete_planet_by_id(_id):
     planets_db = mongo.db.starwars_planets
 
     try:
-        planet = planets.find_one({'_id': ObjectId(_id)})
-        name = planet['nome']
-
-        planets.delete_one({'nome': name.capitalize()})
+        planet = planets_db.find_one_and_delete({'_id': ObjectId(_id)})
+        name = planet['name']
         output = name.capitalize() + ' has been deleted.'
     except bson.errors.InvalidId as e:
         print(e)
