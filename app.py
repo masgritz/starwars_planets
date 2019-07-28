@@ -112,6 +112,9 @@ def find_planet_by_id(_id):
     except bson.errors.InvalidId as e:
         print(e)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
+    except TypeError as te:
+        print(te)
+        output = 'ID not found! If an item does not appear in our records, it does not exist.'
 
     return jsonify({'result': output})
 
@@ -144,6 +147,9 @@ def delete_planet_by_id(_id):
         output = name.capitalize() + ' has been deleted.'
     except bson.errors.InvalidId as e:
         print(e)
+        output = 'ID not found! If an item does not appear in our records, it does not exist.'
+    except TypeError as te:
+        print(te)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
 
     return jsonify({'result': output})
