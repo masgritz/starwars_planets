@@ -37,15 +37,15 @@ def get_planet_appearances(name):
 @app.route('/planets', methods=['GET'])
 def get_planets():
     """get a list of all planets registered in the database and their values in json format"""
-    planets = mongo.db.starwars_planets
+    planets_db = mongo.db.starwars_planets
     output = list()
 
-    for planet in planets.find():
+    for planet in planets_db.find():
         output.append({
-            'nome': planet['nome'],
-            'clima': planet['clima'],
-            'terreno': planet['terreno'],
-            'numero_de_aparicoes': planet['numero_de_aparicoes']})
+            'name': planet['name'],
+            'climate': planet['climate'],
+            'terrain': planet['terrain'],
+            'n_appearances': planet['n_appearances']})
 
     return jsonify({'planets': output})
 
@@ -53,28 +53,28 @@ def get_planets():
 @app.route('/planets', methods=['POST'])
 def add_planet():
     """add a new planet to the database"""
-    planets = mongo.db.starwars_planets
+    planets_db = mongo.db.starwars_planets
 
     name = request.json['name']
     climate = request.json['climate']
     terrain = request.json['terrain']
     n_appearances = get_planet_appearances(name)
 
-    if planets.find_one({'nome': name}):
+    if planets_db.find_one({'name': name}):
         output = 'This planet is already in the database.'
 
     else:
-        planet = planets.insert_one({"nome": name.capitalize(),
-                                     "clima": climate,
-                                     "terreno": terrain,
-                                     "numero_de_aparicoes": n_appearances})
+        planet = planets_db.insert_one({"name": name.capitalize(),
+                                        "climate": climate,
+                                        "terrain": terrain,
+                                        "n_appearances": n_appearances})
         planet_id = planet.inserted_id
 
-        new_planet = planets.find_one({'_id': planet_id})
-        output = {'nome': new_planet['nome'],
-                  'clima': new_planet['clima'],
-                  'terreno': new_planet['terreno'],
-                  'numero_de_aparicoes': new_planet['numero_de_aparicoes']}
+        new_planet = planets_db.find_one({'_id': planet_id})
+        output = {'name': new_planet['name'],
+                  'climate': new_planet['climate'],
+                  'terrain': new_planet['terrain'],
+                  'n_appearances': new_planet['n_appearances']}
 
     return jsonify({'result': output})
 
@@ -82,14 +82,14 @@ def add_planet():
 @app.route('/planets/name/<name>', methods=['GET'])
 def find_planet_by_name(name):
     """get the values of a single planet in json format using the name as the search parameter"""
-    planets = mongo.db.starwars_planets
-    planet = planets.find_one({'nome': name.capitalize()})
+    planets_db = mongo.db.starwars_planets
+    planet = planets_db.find_one({'name': name.capitalize()})
 
     if planet:
-        output = {'nome': planet['nome'],
-                  'clima': planet['clima'],
-                  'terreno': planet['terreno'],
-                  'numero_de_aparicoes': planet['numero_de_aparicoes']}
+        output = {'name': planet['name'],
+                  'climate': planet['climate'],
+                  'terrain': planet['terrain'],
+                  'n_appearances': planet['n_appearances']}
     else:
         output = 'No results found.'
 
@@ -99,15 +99,15 @@ def find_planet_by_name(name):
 @app.route('/planets/id/<_id>', methods=['GET'])
 def find_planet_by_id(_id):
     """get the values of a single planet in json format using the id as the search parameter"""
-    planets = mongo.db.starwars_planets
+    planets_db = mongo.db.starwars_planets
 
     try:
-        planet = planets.find_one({'_id': ObjectId(_id)})
+        planet = planets_db.find_one({'_id': ObjectId(_id)})
 
-        output = {'nome': planet['nome'],
-                  'clima': planet['clima'],
-                  'terreno': planet['terreno'],
-                  'numero_de_aparicoes': planet['numero_de_aparicoes']}
+        output = {'name': planet['name'],
+                  'climate': planet['climate'],
+                  'terrain': planet['terrain'],
+                  'n_appearances': planet['n_appearances']}
 
     except bson.errors.InvalidId as e:
         print(e)
@@ -122,8 +122,7 @@ def find_planet_by_id(_id):
 @app.route('/planets/name/<name>', methods=['DELETE'])
 def delete_planet_by_name(name):
     """deletes a planet from the database that matches the name"""
-    planets = mongo.db.starwars_planets
-    planet = planets.find_one({'nome': name.capitalize()})
+    planets_db = mongo.db.starwars_planets
 
     if planet:
         planets.delete_one({'nome': name.capitalize()})
@@ -137,7 +136,7 @@ def delete_planet_by_name(name):
 @app.route('/planets/id/<_id>', methods=['DELETE'])
 def delete_planet_by_id(_id):
     """deletes a planet from the database that matches the id"""
-    planets = mongo.db.starwars_planets
+    planets_db = mongo.db.starwars_planets
 
     try:
         planet = planets.find_one({'_id': ObjectId(_id)})
