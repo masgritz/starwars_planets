@@ -1,4 +1,4 @@
-# Star Wars REST API
+# Star Wars Planets REST API
 
 Essa é uma API REST desenvolvida em Python 3 utilizando Flask (https://github.com/pallets/flask) e PyMongo (https://github.com/mongodb/mongo-python-driver) com o objetivo de gerenciar planetas do universo de Star Wars. Inclui funções para inserir, excluir e buscar planetas e possuí integração com o SWAPI (https://swapi.co) para inserir o número de aparições do planeta nos filmes da saga no banco de dados.
 
