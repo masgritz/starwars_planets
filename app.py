@@ -119,6 +119,67 @@ def find_planet_by_id(_id):
     return jsonify({'result': output})
 
 
+@app.route('/planets/name/<name>', methods=['PUT'])
+def update_planet_by_name(name):
+    planets_db = mongo.db.starwars_planets
+
+    name = request.json['name']
+    climate = request.json['climate']
+    terrain = request.json['terrain']
+
+    output = list()
+
+    try:
+        planet = planets_db.find_one_and_update({'name': name.capitalize()},
+                                                {'$set': {
+                                                    'name': name,
+                                                    'climate': climate,
+                                                    'terrain': terrain
+                                                }}, {'new': True}, upsert=False)
+        output = {'name': planet['name'],
+                  'climate': planet['climate'],
+                  'terrain': planet['terrain'],
+                  'n_appearances': planet['n_appearances']}
+
+    except TypeError as te:
+        print(te)
+        output = 'Name not found! If an item does not appear in our records, it does not exist.'
+
+    return jsonify({'result': output})
+
+
+@app.route('/planets/id/<_id>', methods=['PUT'])
+def update_planet_by_id(_id):
+    planets_db = mongo.db.starwars_planets
+
+    name = request.json['name']
+    climate = request.json['climate']
+    terrain = request.json['terrain']
+
+    output = list()
+
+    try:
+        planet = planets_db.find_one_and_update({'_id': ObjectId(_id)},
+                                                {'$set': {
+                                                    'name': name,
+                                                    'climate': climate,
+                                                    'terrain': terrain
+                                                }})
+        output = {'name': planet['name'],
+                  'climate': planet['climate'],
+                  'terrain': planet['terrain'],
+                  'n_appearances': planet['n_appearances']}
+
+    except bson.errors.InvalidId as e:
+        print(e)
+        output = 'ID not found! If an item does not appear in our records, it does not exist.'
+    except TypeError as te:
+        print(te)
+        output = 'ID not found! If an item does not appear in our records, it does not exist.'
+
+    return jsonify({'result': output})
+
+
 @app.route('/planets/name/<name>', methods=['DELETE'])
 def delete_planet_by_name(name):
     """deletes a planet from the database that matches the name"""
