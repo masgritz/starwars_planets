@@ -15,7 +15,7 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def greeting():
-    return jsonify({'result': 'Hello there!'})
+    return jsonify({'result': 'Hello there!'}), 200
 
 
 def get_planet_appearances(name):
@@ -47,7 +47,7 @@ def get_planets():
             'terrain': planet['terrain'],
             'n_appearances': planet['n_appearances']})
 
-    return jsonify({'planets': output})
+    return jsonify({'planets': output}), 200
 
 
 @app.route('/planets', methods=['POST'])
@@ -62,6 +62,7 @@ def add_planet():
 
     if planets_db.find_one({'name': name}):
         output = 'This planet is already in the database.'
+        status_code = 409
 
     else:
         planet = planets_db.insert_one({"name": name.capitalize(),
@@ -75,8 +76,9 @@ def add_planet():
                   'climate': new_planet['climate'],
                   'terrain': new_planet['terrain'],
                   'n_appearances': new_planet['n_appearances']}
+        status_code = 201
 
-    return jsonify({'result': output})
+    return jsonify({'result': output}), status_code
 
 
 @app.route('/planets/name/<name>', methods=['GET'])
@@ -90,10 +92,12 @@ def find_planet_by_name(name):
                   'climate': planet['climate'],
                   'terrain': planet['terrain'],
                   'n_appearances': planet['n_appearances']}
+        status_code = 200
     else:
         output = 'No results found.'
+        status_code = 404
 
-    return jsonify({'result': output})
+    return jsonify({'result': output}), status_code
 
 
 @app.route('/planets/id/<_id>', methods=['GET'])
@@ -108,15 +112,18 @@ def find_planet_by_id(_id):
                   'climate': planet['climate'],
                   'terrain': planet['terrain'],
                   'n_appearances': planet['n_appearances']}
+        status_code = 200
 
     except bson.errors.InvalidId as e:
         print(e)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
     except TypeError as te:
         print(te)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
 
-    return jsonify({'result': output})
+    return jsonify({'result': output}), status_code
 
 
 @app.route('/planets/name/<name>', methods=['PUT'])
@@ -140,12 +147,14 @@ def update_planet_by_name(name):
                   'climate': planet['climate'],
                   'terrain': planet['terrain'],
                   'n_appearances': planet['n_appearances']}
+        status_code = 200
 
     except TypeError as te:
         print(te)
         output = 'Name not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
 
-    return jsonify({'result': output})
+    return jsonify({'result': output}), status_code
 
 
 @app.route('/planets/id/<_id>', methods=['PUT'])
@@ -169,15 +178,19 @@ def update_planet_by_id(_id):
                   'climate': planet['climate'],
                   'terrain': planet['terrain'],
                   'n_appearances': planet['n_appearances']}
+        status_code = 200
 
     except bson.errors.InvalidId as e:
         print(e)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
+
     except TypeError as te:
         print(te)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
 
-    return jsonify({'result': output})
+    return jsonify({'result': output}), status_code
 
 
 @app.route('/planets/name/<name>', methods=['DELETE'])
@@ -189,12 +202,14 @@ def delete_planet_by_name(name):
         planet = planets_db.find_one_and_delete({'name': name.capitalize()})
         name = planet['name']
         output = name.capitalize() + ' has been deleted.'
+        status_code = 200
 
     except TypeError as te:
         print(te)
         output = 'Name not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
 
-    return jsonify({'result': output})
+    return jsonify({'result': output}), status_code
 
 
 @app.route('/planets/id/<_id>', methods=['DELETE'])
@@ -206,14 +221,19 @@ def delete_planet_by_id(_id):
         planet = planets_db.find_one_and_delete({'_id': ObjectId(_id)})
         name = planet['name']
         output = name.capitalize() + ' has been deleted.'
+        status_code = 200
+
     except bson.errors.InvalidId as e:
         print(e)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
+
     except TypeError as te:
         print(te)
         output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        status_code = 404
 
-    return jsonify({'result': output})
+    return jsonify({'result': output}), status_code
 
 
 if __name__ == "__main__":
