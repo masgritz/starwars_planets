@@ -20,7 +20,7 @@ mongo = PyMongo(app)
 @api.route('/planets/')
 class PlanetsList(Resource):
     def get(self):
-        """get a list of all planets registered in the database and their values in json format"""
+        """returns a list of planets in the database"""
         planets_db = mongo.db.starwars_planets
         output = list()
 
@@ -79,7 +79,7 @@ class PlanetsList(Resource):
 @api.route('/planets/id/<id>')
 class PlanetId(Resource):
     def get(self, planet_id):
-        """get the values of a single planet in json format using the id as the search parameter"""
+        """returns a single planet and its details using the id as the search parameter"""
         planets_db = mongo.db.starwars_planets
 
         try:
@@ -100,7 +100,7 @@ class PlanetId(Resource):
         return jsonify({'result': output})
 
     def delete(self, planet_id):
-        """deletes a planet from the database that matches the id"""
+        """deletes a planet from the database using the id as the search parameter"""
         planets_db = mongo.db.starwars_planets
 
         try:
@@ -119,6 +119,7 @@ class PlanetId(Resource):
         return jsonify({'result': output})
 
     def put(self, planet_id):
+        """updates a planet from the database using the id as the search parameter"""
         planets_db = mongo.db.starwars_planets
 
         name = request.json['name']
@@ -153,7 +154,7 @@ class PlanetId(Resource):
 @api.route('/planets/name/<name>')
 class PlanetName(Resource):
     def get(self, name):
-        """get the values of a single planet in json format using the name as the search parameter"""
+        """returns a single planet and its details using the name as the search parameter"""
         planets_db = mongo.db.starwars_planets
         planet = planets_db.find_one({'name': name.capitalize()})
 
@@ -168,7 +169,7 @@ class PlanetName(Resource):
         return jsonify({'result': output})
 
     def delete(self, name):
-        """deletes a planet from the database that matches the name"""
+        """deletes a planet from the database using the name as the search parameter"""
         planets_db = mongo.db.starwars_planets
 
         try:
@@ -183,6 +184,7 @@ class PlanetName(Resource):
         return jsonify({'result': output})
 
     def put(self, name):
+        """updates a planet from the database using the name as the search parameter"""
         planets_db = mongo.db.starwars_planets
 
         name = request.json['name']
