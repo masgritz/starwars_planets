@@ -90,6 +90,7 @@ class PlanetId(Resource):
     def get(self, _id):
         """returns a single planet and its details using the id as the search parameter"""
         planets_db = mongo.db.starwars_planets
+        planet = None
 
         try:
             planet = planets_db.find_one({'_id': ObjectId(_id)})
@@ -98,43 +99,37 @@ class PlanetId(Resource):
                       'terrain': planet['terrain'],
                       'n_appearances': planet['n_appearances']}
 
-        except bson.errors.InvalidId as e:
-            print(e)
-            output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        except bson.errors.InvalidId as id_e:
+            print(id_e)
+
         except TypeError as te:
             print(te)
-            output = 'ID not found! If an item does not appear in our records, it does not exist.'
 
-        return jsonify({'result': output})
+        except Exception as e:
+            print(e)
 
-    def delete(self, planet_id):
+        return jsonify({'result': output}) if planet else ("ID not found.", 404)
+
+    def delete(self, _id):
         """deletes a planet from the database using the id as the search parameter"""
         planets_db = mongo.db.starwars_planets
+        planet = None
 
         try:
             planet = planets_db.find_one_and_delete({'_id': ObjectId(_id)})
             name = planet['name']
             output = name.capitalize() + ' has been deleted.'
 
-        except bson.errors.InvalidId as e:
-            print(e)
-            output = 'ID not found! If an item does not appear in our records, it does not exist.'
+        except bson.errors.InvalidId as id_e:
+            print(id_e)
 
         except TypeError as te:
             print(te)
-            output = 'ID not found! If an item does not appear in our records, it does not exist.'
-
-        return jsonify({'result': output})
 
         except Exception as e:
             print(e)
-            output = 'ID not found! If an item does not appear in our records, it does not exist.'
 
-        except TypeError as te:
-            print(te)
-            output = 'ID not found! If an item does not appear in our records, it does not exist.'
-
-        return jsonify({'result': output})
+        return jsonify({'result': output}) if planet else ("ID not found", 404)
 
 
 @api.route('/planets/name/<name>')
@@ -149,14 +144,13 @@ class PlanetName(Resource):
                       'climate': planet['climate'],
                       'terrain': planet['terrain'],
                       'n_appearances': planet['n_appearances']}
-        else:
-            output = 'No results found.'
 
-        return jsonify({'result': output})
+        return jsonify({'result': output}) if planet else ("Name not found.", 404)
 
     def delete(self, name):
         """deletes a planet from the database using the name as the search parameter"""
         planets_db = mongo.db.starwars_planets
+        planet = None
 
         try:
             planet = planets_db.find_one_and_delete({'name': name.capitalize()})
