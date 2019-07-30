@@ -92,7 +92,7 @@ class PlanetId(Resource):
         except Exception as e:
             print(e)
 
-        return json.loads(json.dumps(planet, default=json_util.default)) if planet else ("Name not found.", 404)
+        return json.loads(json.dumps(planet, default=json_util.default)) if planet else ("ID not found.", 404)
 
     def delete(self, _id):
         """deletes a planet from the database using the id as the search parameter"""
