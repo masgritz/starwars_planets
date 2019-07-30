@@ -85,15 +85,14 @@ class PlanetsList(Resource):
         return appearances
 
 
-@api.route('/planets/id/<id>')
+@api.route('/planets/id/<_id>')
 class PlanetId(Resource):
-    def get(self, planet_id):
+    def get(self, _id):
         """returns a single planet and its details using the id as the search parameter"""
         planets_db = mongo.db.starwars_planets
 
         try:
-            planet = planets_db.find_one({'_id': ObjectId(planet_id)})
-
+            planet = planets_db.find_one({'_id': ObjectId(_id)})
             output = {'name': planet['name'],
                       'climate': planet['climate'],
                       'terrain': planet['terrain'],
@@ -113,7 +112,7 @@ class PlanetId(Resource):
         planets_db = mongo.db.starwars_planets
 
         try:
-            planet = planets_db.find_one_and_delete({'_id': ObjectId(planet_id)})
+            planet = planets_db.find_one_and_delete({'_id': ObjectId(_id)})
             name = planet['name']
             output = name.capitalize() + ' has been deleted.'
 
