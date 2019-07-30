@@ -44,23 +44,18 @@ class PlanetsList(Resource):
         terrain = request.json['terrain']
         n_appearances = self.get_planet_appearances(name)
 
-        if planets_db.find_one({'name': name}):
-            output = 'This planet is already in the database.'
-
+        if planets_db.find_one({'name': name.capitalize()}):
+            new_planet = None
         else:
             planet = planets_db.insert_one({"name": name.capitalize(),
                                             "climate": climate,
                                             "terrain": terrain,
                                             "n_appearances": n_appearances})
             planet_id = planet.inserted_id
-
             new_planet = planets_db.find_one({'_id': planet_id})
-            output = {'name': new_planet['name'],
-                      'climate': new_planet['climate'],
-                      'terrain': new_planet['terrain'],
-                      'n_appearances': new_planet['n_appearances']}
 
-        return jsonify({'result': output})
+        return json.loads(json.dumps(new_planet, default=json_util.default)) if new_planet else (
+            "Planet already exists in the database", 500)
 
     def get_planet_appearances(self, name):
         """accesses swapi to get the number of times the planet appeared in a movie"""
