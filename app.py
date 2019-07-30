@@ -126,29 +126,7 @@ class PlanetId(Resource):
 
         return jsonify({'result': output})
 
-    def put(self, planet_id):
-        """updates a planet from the database using the id as the search parameter"""
-        planets_db = mongo.db.starwars_planets
-
-        name = request.json['name']
-        climate = request.json['climate']
-        terrain = request.json['terrain']
-
-        output = list()
-
-        try:
-            planet = planets_db.find_one_and_update({'_id': ObjectId(planet_id)},
-                                                    {'$set': {
-                                                        'name': name,
-                                                        'climate': climate,
-                                                        'terrain': terrain
-                                                    }})
-            output = {'name': planet['name'],
-                      'climate': planet['climate'],
-                      'terrain': planet['terrain'],
-                      'n_appearances': planet['n_appearances']}
-
-        except bson.errors.InvalidId as e:
+        except Exception as e:
             print(e)
             output = 'ID not found! If an item does not appear in our records, it does not exist.'
 
@@ -187,39 +165,8 @@ class PlanetName(Resource):
 
         except TypeError as te:
             print(te)
-            output = 'Name not found! If an item does not appear in our records, it does not exist.'
 
-        return jsonify({'result': output})
-
-    def put(self, name):
-        """updates a planet from the database using the name as the search parameter"""
-        planets_db = mongo.db.starwars_planets
-
-        name = request.json['name']
-        climate = request.json['climate']
-        terrain = request.json['terrain']
-
-        output = list()
-
-        try:
-            planet = planets_db.find_one_and_update({'name': name.capitalize()},
-                                                    {'$set': {
-                                                        'name': name,
-                                                        'climate': climate,
-                                                        'terrain': terrain
-                                                    }}, {'new': True}, upsert=False)
-            output = {'name': planet['name'],
-                      'climate': planet['climate'],
-                      'terrain': planet['terrain'],
-                      'n_appearances': planet['n_appearances']}
-            status_code = 200
-
-        except TypeError as te:
-            print(te)
-            output = 'Name not found! If an item does not appear in our records, it does not exist.'
-            status_code = 404
-
-        return jsonify({'result': output}), status_code
+        return jsonify({'result': output}) if planet else ("Name not found", 404)
 
 
 if __name__ == "__main__":
