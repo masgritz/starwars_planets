@@ -16,7 +16,7 @@ Para iniciar a API, execute o comando:
 ```python
 python3 app.py
 ```
-Ele pode ser acessada através do endereço ```https://127.0.0.1:5000```.
+Ela pode ser acessada através do endereço ```https://127.0.0.1:5000``` por meio da Swagger UI ou por meio dos métodos GET, POST e DELETE.
 ```python
 https://127.0.0.1:5000/planets # Método GET: lista todos os planetas cadastrados no banco de dados
 
