@@ -4,7 +4,7 @@ import bson.errors
 from bson.objectid import ObjectId
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
-from flask_restplus import Api, Resource
+from flask_restplus import Api, Resource, fields
 
 api = Api()
 
@@ -15,6 +15,14 @@ app.config['MONGO_DBNAME'] = 'starwars_planets'
 app.config['MONGO_URI'] = 'mongodb://127.0.0.1/starwars_planets'
 
 mongo = PyMongo(app)
+
+model = api.model('Planet', {
+    'name': fields.String(required=True, description='Name of a planet', help='"name" cannot be blank.'),
+    'climate': fields.String(required=True, description='Climate of the planet', help='"climate" cannot be blank.'),
+    'terrain': fields.String(required=True, description='Terrain type of the planet',
+                             help='"terrain" cannot be blank.'),
+    'n_appearances': fields.Integer(description='Number of times a planet was featured in a movie'),
+})
 
 
 @api.route('/planets/')
@@ -33,6 +41,7 @@ class PlanetsList(Resource):
 
         return jsonify({'planets': output})
 
+    @api.expect(model)
     def post(self):
         """add a new planet to the database"""
         planets_db = mongo.db.starwars_planets
