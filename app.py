@@ -2,6 +2,7 @@ import json
 import requests
 import bson.errors
 from bson.objectid import ObjectId
+from bson import json_util
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from flask_restplus import Api, Resource, fields
@@ -30,16 +31,8 @@ class PlanetsList(Resource):
     def get(self):
         """returns a list of planets in the database"""
         planets_db = mongo.db.starwars_planets
-        output = list()
 
-        for planet in planets_db.find():
-            output.append({
-                'name': planet['name'],
-                'climate': planet['climate'],
-                'terrain': planet['terrain'],
-                'n_appearances': planet['n_appearances']})
-
-        return jsonify({'planets': output})
+        return [json.loads(json.dumps(planet, default=json_util.default)) for planet in planets_db.find()]
 
     @api.expect(model)
     def post(self):
@@ -94,10 +87,6 @@ class PlanetId(Resource):
 
         try:
             planet = planets_db.find_one({'_id': ObjectId(_id)})
-            output = {'name': planet['name'],
-                      'climate': planet['climate'],
-                      'terrain': planet['terrain'],
-                      'n_appearances': planet['n_appearances']}
 
         except bson.errors.InvalidId as id_e:
             print(id_e)
@@ -108,7 +97,7 @@ class PlanetId(Resource):
         except Exception as e:
             print(e)
 
-        return jsonify({'result': output}) if planet else ("ID not found.", 404)
+        return json.loads(json.dumps(planet, default=json_util.default)) if planet else ("Name not found.", 404)
 
     def delete(self, _id):
         """deletes a planet from the database using the id as the search parameter"""
@@ -139,13 +128,7 @@ class PlanetName(Resource):
         planets_db = mongo.db.starwars_planets
         planet = planets_db.find_one({'name': name.capitalize()})
 
-        if planet:
-            output = {'name': planet['name'],
-                      'climate': planet['climate'],
-                      'terrain': planet['terrain'],
-                      'n_appearances': planet['n_appearances']}
-
-        return jsonify({'result': output}) if planet else ("Name not found.", 404)
+        return json.loads(json.dumps(planet, default=json_util.default)) if planet else ("Name not found.", 404)
 
     def delete(self, name):
         """deletes a planet from the database using the name as the search parameter"""
