@@ -7,7 +7,7 @@ Essa é uma API REST desenvolvida em Python 3 utilizando Flask (https://github.c
 É necessário apenas a instalação das depedências com o [pip](https://pip.pypa.io/en/stable/).
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Modo de Uso
